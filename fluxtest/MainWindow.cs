@@ -23,11 +23,12 @@ namespace fluxtest
         DataTable table = new DataTable();
         BindingSource tSource = new BindingSource();
 
-        CultureInfo culture = new CultureInfo("en-us");
+        int counter;
         public MainWindow()
         {
             InitializeComponent();
             optionWindow = new OptionWindow(this);
+            counter = 0;
 
             measurementStatus.Text = "Waiting For Device";
 
@@ -75,7 +76,8 @@ namespace fluxtest
                     {
                         try
                         {
-                            table.Rows.Add(int.Parse(data[0]), (((65535 * int.Parse(data[1])) + int.Parse(data[2])) * 0.000064), Double.Parse(data[3])/6000);
+                            counter += ((65535 * int.Parse(data[1])) + int.Parse(data[2]));
+                            table.Rows.Add(int.Parse(data[0]), (counter * 0.000064), Double.Parse(data[3])/6000);
                             chart.DataBind();
                             if (int.Parse(data[0]) < 38) measurementStatus.Text = "Measuring";
                             else if (int.Parse(data[0]) == 38) measurementStatus.Text = "Done";
