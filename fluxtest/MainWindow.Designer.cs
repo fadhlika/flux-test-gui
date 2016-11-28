@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,11 +47,17 @@
             this.measurementStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.connectButton = new System.Windows.Forms.ToolStripButton();
+            this.resetButton = new System.Windows.Forms.ToolStripButton();
+            this.dataButton = new System.Windows.Forms.ToolStripButton();
+            this.graphButton = new System.Windows.Forms.ToolStripButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -59,17 +66,18 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel1.Controls.Add(this.menuStrip1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.statusStrip1, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.dataGridView, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.chart, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.statusStrip1, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.dataGridView, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chart, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.toolStrip1, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(704, 441);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -112,6 +120,7 @@
             // 
             // dataToolStripMenuItem
             // 
+            this.dataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("dataToolStripMenuItem.Image")));
             this.dataToolStripMenuItem.Name = "dataToolStripMenuItem";
             this.dataToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.dataToolStripMenuItem.Text = "Data";
@@ -119,6 +128,7 @@
             // 
             // graphToolStripMenuItem
             // 
+            this.graphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("graphToolStripMenuItem.Image")));
             this.graphToolStripMenuItem.Name = "graphToolStripMenuItem";
             this.graphToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.graphToolStripMenuItem.Text = "Graph";
@@ -210,24 +220,75 @@
             this.dataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView.Location = new System.Drawing.Point(3, 27);
+            this.dataGridView.Location = new System.Drawing.Point(3, 57);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.ReadOnly = true;
-            this.dataGridView.RowHeadersVisible = false;
-            this.dataGridView.Size = new System.Drawing.Size(205, 389);
+            this.dataGridView.Size = new System.Drawing.Size(205, 359);
             this.dataGridView.TabIndex = 2;
+            this.dataGridView.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_RowsRemoved);
             // 
             // chart
             // 
             this.chart.BorderlineColor = System.Drawing.Color.Black;
             this.chart.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.chart.Location = new System.Drawing.Point(214, 27);
+            this.chart.Location = new System.Drawing.Point(214, 57);
             this.chart.Name = "chart";
             this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
-            this.chart.Size = new System.Drawing.Size(487, 389);
+            this.chart.Size = new System.Drawing.Size(487, 359);
             this.chart.TabIndex = 3;
             this.chart.Text = "chart1";
+            // 
+            // toolStrip1
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.toolStrip1, 2);
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.connectButton,
+            this.resetButton,
+            this.dataButton,
+            this.graphButton});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(704, 30);
+            this.toolStrip1.TabIndex = 4;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // connectButton
+            // 
+            this.connectButton.Image = ((System.Drawing.Image)(resources.GetObject("connectButton.Image")));
+            this.connectButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.connectButton.Name = "connectButton";
+            this.connectButton.Size = new System.Drawing.Size(72, 27);
+            this.connectButton.Text = "Connect";
+            this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Image = ((System.Drawing.Image)(resources.GetObject("resetButton.Image")));
+            this.resetButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(55, 27);
+            this.resetButton.Text = "Reset";
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // dataButton
+            // 
+            this.dataButton.Image = ((System.Drawing.Image)(resources.GetObject("dataButton.Image")));
+            this.dataButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dataButton.Name = "dataButton";
+            this.dataButton.Size = new System.Drawing.Size(78, 27);
+            this.dataButton.Text = "Save Data";
+            this.dataButton.Click += new System.EventHandler(this.dataButton_Click);
+            // 
+            // graphButton
+            // 
+            this.graphButton.Image = ((System.Drawing.Image)(resources.GetObject("graphButton.Image")));
+            this.graphButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.graphButton.Name = "graphButton";
+            this.graphButton.Size = new System.Drawing.Size(86, 27);
+            this.graphButton.Text = "Save Graph";
+            this.graphButton.Click += new System.EventHandler(this.graphButton_Click);
             // 
             // MainWindow
             // 
@@ -247,6 +308,8 @@
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -254,11 +317,8 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.DataGridView dataGridView;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart;
-        private System.Windows.Forms.ToolStripStatusLabel measurementStatus;
-        private System.Windows.Forms.ToolStripStatusLabel portStatus;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
@@ -271,6 +331,14 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem graphToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton resetButton;
+        private System.Windows.Forms.ToolStripButton dataButton;
+        private System.Windows.Forms.ToolStripButton graphButton;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel portStatus;
+        private System.Windows.Forms.ToolStripStatusLabel measurementStatus;
+        private System.Windows.Forms.ToolStripButton connectButton;
     }
 }
 

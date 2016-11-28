@@ -33,19 +33,17 @@ namespace fluxtest
 
             table.Columns.Add("Level", typeof(int));
             table.Columns.Add("Time", typeof(double));
+            table.Columns.Add("DP", typeof(double));
             tSource.DataSource = table;
             dataGridView.DataSource = tSource;
-            dataGridView.RowHeadersVisible = false;
 
             Title timer = new Title();
-            timer.Text = "Timer";
+            timer.Text = "Flux";
             timer.Font = new Font("Arial", 12f, FontStyle.Bold);
             chart.Titles.Add(timer);
             chart.ChartAreas.Add("ChartArea1");
             chart.ChartAreas["ChartArea1"].AxisX.Title = "Level";
             chart.ChartAreas["ChartArea1"].AxisY.Title = "Time (s)";
-            chart.ChartAreas["ChartArea1"].AxisX.Minimum = 0;
-            chart.ChartAreas["ChartArea1"].AxisX.Maximum = 40;
             chart.Series.Add("Series1");
             chart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             chart.Series["Series1"].XValueMember = "Level";
@@ -59,7 +57,6 @@ namespace fluxtest
             serial.StopBits = StopBits.One;
             serial.DataBits = 8;
             serial.Handshake = Handshake.None;
-            serial.RtsEnable = true;
             serial.DtrEnable = true;
             serial.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
         }
@@ -76,9 +73,17 @@ namespace fluxtest
                 {
                     dataGridView.BeginInvoke(new MethodInvoker(delegate
                     {
-                        table.Rows.Add(int.Parse(data[0]), Double.Parse(data[1], culture)*0.000064);
-                        chart.DataBind();
-                        if (int.Parse(data[0]) == 37) measurementStatus.Text = "Done";
+                        try
+                        {
+                            table.Rows.Add(int.Parse(data[0]), (((65535 * int.Parse(data[1])) + int.Parse(data[2])) * 0.000064), Double.Parse(data[3])/6000);
+                            chart.DataBind();
+                            if (int.Parse(data[0]) < 38) measurementStatus.Text = "Measuring";
+                            else if (int.Parse(data[0]) == 38) measurementStatus.Text = "Done";
+                        }
+                        catch
+                        {
+
+                        }
                     }));
                 }
             }
@@ -138,22 +143,17 @@ namespace fluxtest
             }
         }
 
-        private void graphToolStripMenuItem_Click(object sender, EventArgs e)
+        private void dataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Portable Network Graphics | *.png"; 
-            try
-            {
-                save.ShowDialog();
-                chart.SaveImage(save.FileName, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
-            }
-            catch
-            {
-
-            }
+            saveData();
         }
 
-        private void dataToolStripMenuItem_Click(object sender, EventArgs e)
+        private void dataButton_Click(object sender, EventArgs e)
+        {
+            saveData();
+        }
+
+        private void saveData()
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = "Text Files | *.txt";
@@ -172,5 +172,56 @@ namespace fluxtest
 
             }
         }
+
+        private void graphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveGraph();
+        }
+
+        private void graphButton_Click(object sender, EventArgs e)
+        {
+            saveGraph();
+        }
+
+        private void saveGraph()
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Portable Network Graphics | *.png";
+            try
+            {
+                save.ShowDialog();
+                chart.SaveImage(save.FileName, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            table.Clear();
+            chart.DataBind();
+            if (serial.IsOpen)
+            {
+                serial.DiscardInBuffer();
+                serial.DiscardOutBuffer();
+                serial.Close();
+            }
+            if (serial.PortName != "") optionWindow.ShowDialog();
+            else ConnectDevice();
+        }
+
+        private void connectButton_Click(object sender, EventArgs e)
+        {
+            if (serial.IsOpen) MessageBox.Show("Device already connected");
+            else optionWindow.ShowDialog();
+        }
+
+        private void dataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            chart.DataBind();
+        }
     }
 }
+
