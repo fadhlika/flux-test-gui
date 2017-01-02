@@ -21,13 +21,18 @@ namespace fluxtest
         DataTable table = new DataTable();
         BindingSource tSource = new BindingSource();
         Series fit = new Series("Fit");
-        double timer = 0.0;
 
+        List<String> log = new List<string>();
+        double timer = 0.0;
+        int no = 0;
         public MainWindow()
         {
             InitializeComponent();
 
+            Console.WriteLine(DateTime.Now.ToLongTimeString());
+
             fitText.Text = "";
+            table.Columns.Add("No", typeof(int));
             table.Columns.Add("Level", typeof(double));
             table.Columns.Add("Time", typeof(double));
             table.Columns.Add("DP", typeof(double));
@@ -37,39 +42,24 @@ namespace fluxtest
             PortRefresh();
 
             chart.ChartAreas.Add("ChartAreaFlow");
-            chart.ChartAreas.Add("ChartAreaDP");
             chart.ChartAreas["ChartAreaFlow"].AxisX.Minimum = 0;
             chart.ChartAreas["ChartAreaFlow"].AxisY.Minimum = 0;
             chart.ChartAreas["ChartAreaFlow"].AxisY.Maximum = 2;
             chart.ChartAreas["ChartAreaFlow"].AxisX.Title = "Time (s)";
-            chart.ChartAreas["ChartAreaFlow"].AxisY.Title = "Level (m)";
-            chart.ChartAreas["ChartAreaDP"].AxisX.Minimum = 0;
-            chart.ChartAreas["ChartAreaDP"].AxisX.Maximum = 2;
-            chart.ChartAreas["ChartAreaDP"].AxisX.Title = "Level (m)";
-            chart.ChartAreas["ChartAreaDP"].AxisY.Title = "DP (Pa)";            
+            chart.ChartAreas["ChartAreaFlow"].AxisY.Title = "Level (m)";      
             chart.Titles.Add("Flow");
             chart.Titles[0].DockedToChartArea = "ChartAreaFlow";
             chart.Titles[0].DockingOffset = -5;
-            chart.Titles.Add("Differesial Pressure");
-            chart.Titles[1].DockedToChartArea = "ChartAreaDP";
-            chart.Titles[1].DockingOffset = -5;
             chart.Legends.Add("Legend");
-            chart.Legends[0].Docking = Docking.Right;
-            chart.Legends[0].LegendStyle = LegendStyle.Column;
+            chart.Legends[0].Docking = Docking.Bottom;
+            chart.Legends[0].LegendStyle = LegendStyle.Row;
             chart.Series.Add("Flow");
-            chart.Series.Add("DP");
             chart.Series["Flow"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             chart.Series["Flow"].ChartArea = "ChartAreaFlow";
             chart.Series["Flow"].Legend = "Legend";
             chart.Series["Flow"].XValueMember = "Time";
             chart.Series["Flow"].YValueMembers = "Level";
             chart.Series["Flow"].BorderWidth = 3;
-            chart.Series["DP"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            chart.Series["DP"].ChartArea = "ChartAreaDP";
-            chart.Series["DP"].Legend = "Legend";
-            chart.Series["DP"].XValueMember = "Level";
-            chart.Series["DP"].YValueMembers = "DP";
-            chart.Series["DP"].BorderWidth = 3;
             chart.DataSource = table;
             chart.DataBind();
 
@@ -103,12 +93,12 @@ namespace fluxtest
                 double level = Math.Round(2 - (int.Parse(data[0]) * 0.05), 3);
                 timer += ((65535 * int.Parse(data[1])) + int.Parse(data[2])) * 0.000064;
                 timer = Math.Round(timer, 3);
-                double dp = Math.Round((double.Parse(data[3]) / 60), 3);
+                double dp = double.Parse(data[3]) / 60;
                 if (dataGridView.InvokeRequired)
                 {
                     dataGridView.Invoke(new MethodInvoker(delegate
                     {
-                        table.Rows.Add(level, timer, dp);
+                        table.Rows.Add(++no, level, timer,dp);
                         chart.DataBind();
                     }));
                 }
@@ -180,8 +170,10 @@ namespace fluxtest
             }
         }
 
-        private void resetButton_Click(object sender, EventArgs e)
+        private void clearButton_Click(object sender, EventArgs e)
         {
+            no = 0;
+            timer = 0.0;
             table.Clear();
             chart.DataBind();
             fit.Points.Clear();
@@ -200,12 +192,14 @@ namespace fluxtest
                 MessageBox.Show("Do you want to clear all the current data?");
                 table.Rows.Clear();
             }
+            openDialog.Filter = "Comma Separated Values | *.csv";
             openDialog.ShowDialog();
             string[] loadedData;
             try
             {
                 loadedData = File.ReadAllLines(openDialog.FileName);
                 double check;
+                int j = 1;
                 foreach (var line in loadedData)
                 {
                     string[] data = line.Split(',');
@@ -213,10 +207,10 @@ namespace fluxtest
                     {
                         double h = double.Parse(data[0]);
                         double timer = double.Parse(data[1]);
-                        double dp = double.Parse(data[2]);
-                        table.Rows.Add(h, timer, dp);
+                        //double dp = double.Parse(data[2]);
+                        table.Rows.Add(j++, h, timer);
                         chart.DataBind();
-                        Console.WriteLine("{0} {1} {2}", h, timer, dp);
+                        //Console.WriteLine("{0} {1} {2}", h, timer, dp);
                     }
                 }
             }
@@ -239,7 +233,7 @@ namespace fluxtest
                 y[i] = double.Parse(row["Level"].ToString());
                 i++;
             }
-
+            
             #region polynomial regression
             //Get matrix A
             double[,] A = new double[3,3];
@@ -307,7 +301,7 @@ namespace fluxtest
             p[1] = (M[1,0]-(A[1, 2] * p[2]))/A[1,1];
             p[0] = (M[0, 0] - (A[0, 1] * p[1]) - (A[0, 2] * p[2])) / A[0, 0];
             #endregion
-
+            
             //Rounding coeeficient
             for (int c = 0; c < 3; c++)
             {
@@ -400,12 +394,17 @@ namespace fluxtest
             PortRefresh();
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void resetButton_Click(object sender, EventArgs e)
         {
             if (serial.IsOpen)
             {
                 serial.Write("a");
             }
+        }
+
+        private void logToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }           
 }
